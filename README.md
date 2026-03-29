@@ -38,3 +38,7 @@ Se não houver conexão com o Firebase, o site exibe notícias de exemplo.
 2. Importe na Vercel.
 3. Configure as variáveis de ambiente da `.env.example` no painel da Vercel.
 4. Faça deploy.
+
+
+## Ajuste para erro de output na Vercel
+Se o projeto estiver com erro **"Nenhum diretório de saída chamado public"**, este repositório já define `vercel.json` com `outputDirectory: ".next"`, compatível com Next.js.
