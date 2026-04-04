@@ -1,12 +1,42 @@
-/**
- * Placeholder para operações server-side.
- *
- * Neste ambiente, a instalação de `firebase-admin` está bloqueada por política de rede,
- * então este arquivo exporta uma função de orientação até que o pacote possa ser instalado.
- */
+import { getApps, cert, initializeApp, type App } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+
+let adminApp: App | undefined = undefined;
+
+function getPrivateKey() {
+  const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY;
+  if (!privateKey) {
+    throw new Error("FIREBASE_ADMIN_PRIVATE_KEY não configurada.");
+  }
+  return privateKey.replace(/\\n/g, "\n");
+}
+
+export function getAdminApp(): App {
+  if (adminApp !== undefined) return adminApp;
+
+  const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+
+  if (!projectId || !clientEmail) {
+    throw new Error("FIREBASE_ADMIN_PROJECT_ID/FIREBASE_ADMIN_CLIENT_EMAIL não configurados.");
+  }
+
+  adminApp = getApps()[0] ?? initializeApp({
+    credential: cert({
+      projectId,
+      clientEmail,
+      privateKey: getPrivateKey(),
+    }),
+  });
+
+  return adminApp;
+}
 
 export function getAdminDb() {
-  throw new Error(
-    "firebase-admin não está disponível neste ambiente. Instale a dependência e configure FIREBASE_ADMIN_* para habilitar operações server-side.",
-  );
+  return getFirestore(getAdminApp());
+}
+
+export function getAdminAuth() {
+  return getAuth(getAdminApp());
 }
