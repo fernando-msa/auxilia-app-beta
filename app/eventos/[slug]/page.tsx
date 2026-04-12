@@ -2,8 +2,12 @@ import { notFound } from "next/navigation";
 import { getEvents } from "@/services/content";
 import { formatDate } from "@/components/content-ui";
 
-export default async function EventoDetalhe(props: any) {
-  const { slug } = await Promise.resolve(props.params);
+type DetailPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export default async function EventoDetalhe({ params }: DetailPageProps) {
+  const { slug } = await params;
   const events = await getEvents();
   const item = events.find((entry) => entry.slug === slug);
 
