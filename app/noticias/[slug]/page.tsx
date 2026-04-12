@@ -2,8 +2,12 @@ import { notFound } from "next/navigation";
 import { getNews } from "@/services/content";
 import { formatDate } from "@/components/content-ui";
 
-export default async function NoticiaDetalhe({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+type DetailPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export default async function NoticiaDetalhe({ params }: DetailPageProps) {
+  const { slug } = await params;
   const news = await getNews();
   const item = news.find((entry) => entry.slug === slug);
 
