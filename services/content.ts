@@ -115,7 +115,9 @@ function mapSpiritual(id: string, doc: FirestoreDoc): SpiritualContentItem {
 async function getCollection(collection: SupportedCollection) {
   const db = getAdminDb();
   const snapshot = await db.collection(collection).orderBy("createdAt", "desc").limit(20).get();
-  return snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+  return snapshot.docs
+    .map((doc) => ({ id: doc.id, data: doc.data() as FirestoreDoc }))
+    .filter(({ data }) => data.status === undefined || data.status === "published");
 }
 
 export async function getNews(): Promise<NewsItem[]> {
